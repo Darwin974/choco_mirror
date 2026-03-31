@@ -55,8 +55,6 @@ jobs:
             message=$(echo "$message" | sed -E 's/ \([A-Za-z0-9-]+\)$//')
             echo "::error file=$file,line=$linenum::${code} - ${message}"
           done
-      - name: Run make clean
-        run: make clean
       - name: Checks executables
         run: |
           IFS=',' read -ra EXECS <<< "$EXECUTABLES"
@@ -71,6 +69,8 @@ jobs:
               exit 1
             fi
           done
+      - name: Run make clean
+        run: make clean
 
   run_tests:
     runs-on: ubuntu-latest
