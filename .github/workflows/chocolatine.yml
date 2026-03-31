@@ -56,6 +56,7 @@ jobs:
             echo "::error file=$file,line=$linenum::${code} - ${message}"
           done
       - name: Checks executables
+        shell: bash
         run: |
           IFS=',' read -ra EXECS <<< "$EXECUTABLES"
           for exec in "${EXECS[@]}"; do
