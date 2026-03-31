@@ -24,13 +24,7 @@ jobs:
         run: banana-check-repo
       - name: Launch make
         timeout-minutes: 2
-        run: |
-          CC=epiclang make 2>&1 | tee make_output.txt
-      - name: Check make_output.txt
-        run: |
-          if grep -q 'warning: \[Banana\]' make_output.txt; then
-            exit 1
-          fi
+        run: CC=epiclang make 2>&1 | tee make_output.txt
       - name: Minor coding style error
         run: |
           grep -E '^.+:[0-9]+:[0-9]+: warning: \[Banana\] \[Minor\]' make_output.txt | while IFS= read -r line; do
