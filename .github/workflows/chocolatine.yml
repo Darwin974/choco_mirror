@@ -26,6 +26,8 @@ jobs:
         timeout-minutes: 2
         run: |
           CC=epiclang make 2>&1 | tee make_output.txt
+      - name: Check make_output.txt
+        run: |
           if grep -q 'warning: \[Banana\]' make_output.txt; then
             exit 1
           fi
