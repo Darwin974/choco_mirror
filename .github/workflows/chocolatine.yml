@@ -25,35 +25,12 @@ jobs:
       - name: Launch make
         timeout-minutes: 2
         run: CC=epiclang make 2>&1 | tee make_output.txt
-      - name: Minor coding style error
+      - name: Coding style errors
         run: |
-          grep -E '^.+:[0-9]+:[0-9]+: warning: \[Banana\] \[Minor\]' make_output.txt | while IFS= read -r line; do
-            file=$(echo "$line" | cut -d: -f1)
-            linenum=$(echo "$line" | cut -d: -f2)
-            message=$(echo "$line" | sed 's/.*\[Banana\] \[[A-Za-z]*\] //')
-            code=$(echo "$message" | grep -oE '\([A-Za-z0-9-]+\)$' | tr -d '()')
-            message=$(echo "$message" | sed -E 's/ \([A-Za-z0-9-]+\)$//')
-            echo "::error file=$file,line=$linenum::${code} - ${message}"
-          done
-      - name: Major coding style error
-        run: |
-          grep -E '^.+:[0-9]+:[0-9]+: warning: \[Banana\] \[Major\]' make_output.txt | while IFS= read -r line; do
-            file=$(echo "$line" | cut -d: -f1)
-            linenum=$(echo "$line" | cut -d: -f2)
-            message=$(echo "$line" | sed 's/.*\[Banana\] \[[A-Za-z]*\] //')
-            code=$(echo "$message" | grep -oE '\([A-Za-z0-9-]+\)$' | tr -d '()')
-            message=$(echo "$message" | sed -E 's/ \([A-Za-z0-9-]+\)$//')
-            echo "::error file=$file,line=$linenum::${code} - ${message}"
-          done
-      - name: Info coding style error
-        run: |
-          grep -E '^.+:[0-9]+:[0-9]+: warning: \[Banana\] \[Info\]' make_output.txt | while IFS= read -r line; do
-            file=$(echo "$line" | cut -d: -f1)
-            linenum=$(echo "$line" | cut -d: -f2)
-            message=$(echo "$line" | sed 's/.*\[Banana\] \[[A-Za-z]*\] //')
-            code=$(echo "$message" | grep -oE '\([A-Za-z0-9-]+\)$' | tr -d '()')
-            message=$(echo "$message" | sed -E 's/ \([A-Za-z0-9-]+\)$//')
-            echo "::error file=$file,line=$linenum::${code} - ${message}"
+          grep '\[Banana\]' make_output.txt | while IFS=: read -r file line _ msg; do
+            code=$(echo "$msg" | grep -oE '\([A-Z0-9-]+\)' | tr -d '()')
+            msg=$(echo "$msg" | sed 's/.*\] //' | sed "s/ ($code)//")
+            echo "::error file=$file,line=$line::$code - $msg"
           done
       - name: Checks executables
         shell: bash
